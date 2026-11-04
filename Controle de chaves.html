@@ -1,307 +1,322 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CONTROLE DE CHAVES</title>
 
     <style>
-        body {
-            background: #131b26;
-            color: #e7e9ee;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 24px 16px;
-        }
+      body {
+        background: #131b26;
+        color: #e7e9ee;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 24px 16px;
+      }
 
-        header, main {
-            max-width: 960px;
-            margin: 0 auto;
-        }
+      header,
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+      }
 
-        .card {
-            background: #1c2635;
-            border: 1px solid #2d3c52;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 14px;
-        }
+      .card {
+        background: #1c2635;
+        border: 1px solid #2d3c52;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 14px;
+      }
 
-        .card.ok p {
-            color: #3fa796;
-        }
+      .card.ok p {
+        color: #3fa796;
+      }
 
-        .card.busy p {
-            color: #d98c3d;
-        }
+      .card.busy p {
+        color: #d98c3d;
+      }
 
-        .card button {
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #2d3c52;
-            background: #212d40;
-            color: #e7e9ee;
-            cursor: pointer;
-        }
-        
-        #grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-        }
+      .card button {
+        margin-top: 10px;
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #2d3c52;
+        background: #212d40;
+        color: #e7e9ee;
+        cursor: pointer;
+      }
 
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(8, 12, 18, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
+      #grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
 
-        .overlay.show {
-            display: flex;
-        }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(8, 12, 18, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+      }
 
-        .modal {
-            background: #1c2635;
-            border: 1px solid #2d3c52;
-            border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            max-width: 380px;
-        }
+      .overlay.show {
+        display: flex;
+      }
 
-        .modal label {
-            display: block;
-            margin: 12px 0 4px;
-            font-size: 0.85rem;
-        }
+      .modal {
+        background: #1c2635;
+        border: 1px solid #2d3c52;
+        border-radius: 12px;
+        padding: 20px;
+        width: 100%;
+        max-width: 380px;
+      }
 
-        .modal input {
-            width: 100%;
-            padding: 9px;
-            border-radius: 7px;
-            border: 1px solid #2d3c52;
-            background: #131b26;
-            color: #e7e9ee;
-        }
+      .modal label {
+        display: block;
+        margin: 12px 0 4px;
+        font-size: 0.85rem;
+      }
 
-        .modal .acoes {
-            display: flex;
-            gap: 8px;
-            margin-top: 18px;
-        }
+      .modal input {
+        width: 100%;
+        padding: 9px;
+        border-radius: 7px;
+        border: 1px solid #2d3c52;
+        background: #131b26;
+        color: #e7e9ee;
+      }
 
-        .modal .acoes button {
-            flex: 1;
-            padding: 9px;
-            border-radius: 8px;
-            border: 1px solid #2d3c52;
-            background: #212d40;
-            color: #e7e9ee;
-            cursor: pointer;
-        }
+      .modal .acoes {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
 
-        .modal .acoes button.principal {
-            background: #3fa796;
-            border-color: #3fa796;
-            color: #0d1a17;
-            font-weight: bold;
-        }
+      .modal .acoes button {
+        flex: 1;
+        padding: 9px;
+        border-radius: 8px;
+        border: 1px solid #2d3c52;
+        background: #212d40;
+        color: #e7e9ee;
+        cursor: pointer;
+      }
 
-        .modal .erro {
-            color: #d9583d;
-            font-size: 0.85rem;
-            min-height: 1em;
-            margin: 6px 0 0;
-        }
+      .modal .acoes button.principal {
+        background: #3fa796;
+        border-color: #3fa796;
+        color: #0d1a17;
+        font-weight: bold;
+      }
 
-        .card .desc {
-            font-size: 0.8rem;
-            color: #93a0b4;
-            margin-top: 4px;
-        }
+      .modal .erro {
+        color: #d9583d;
+        font-size: 0.85rem;
+        min-height: 1em;
+        margin: 6px 0 0;
+      }
 
-        .historico-area {
-            margin-top: 32px;
-        }
+      .card .desc {
+        font-size: 0.8rem;
+        color: #93a0b4;
+        margin-top: 4px;
+      }
 
-        .hitorico-area h2 {
-            font-size: 14rem;
-            color: #93a0b4;
-        }
+      .historico-area {
+        margin-top: 32px;
+      }
 
-        .log-linha {
-            font-size: 0.85rem;
-            padding: 7px 0;
-            border-bottom: 1px solid #2d3c52;
-        
-        }
+      .hitorico-area h2 {
+        font-size: 14rem;
+        color: #93a0b4;
+      }
 
-        .barra {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 18px 0;
-        }
+      .log-linha {
+        font-size: 0.85rem;
+        padding: 7px 0;
+        border-bottom: 1px solid #2d3c52;
+      }
 
-        .barra button {
-            padding: 9px 14px;
-            border-radius: 8px;
-            border: 1px solid #2d3c52;
-            background: #212d40;
-            color: #e7e9ee;
-            cursor: pointer;
-        }
+      .barra {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 18px 0;
+      }
 
+      .barra button {
+        padding: 9px 14px;
+        border-radius: 8px;
+        border: 1px solid #2d3c52;
+        background: #212d40;
+        color: #e7e9ee;
+        cursor: pointer;
+      }
     </style>
+  </head>
 
-</head>
-<body>
-    
+  <body>
     <header>
-        <h1>Controle de chaves</h1>
-        <p>Central de monitoramento</p>
+      <h1>Controle de chaves</h1>
+      <p>Central de monitoramento</p>
     </header>
 
     <main>
-        <div class="barra">
-            <button id="btnExportar">Exportar backup (.json)</button>
-            <button id="btnImportar">Importar backup</button>
-            <input type="file" id="arquivoImport" accept="application/json" style="display:none">
-        </div>
-        <div id="grid"></div>
-        <section class="historico-area">
-            <h2>Historico recente</h2>
-            <div id="historico"></div>
-        </section>
+      <div class="barra">
+        <button id="btnExportar">Exportar backup (.json)</button>
+        <button id="btnImportar">Importar backup</button>
+        <input
+          type="file"
+          id="arquivoImport"
+          accept="application/json"
+          style="display: none"
+        />
+      </div>
+      <div id="grid"></div>
+      <section class="historico-area">
+        <h2>Historico recente</h2>
+        <div id="historico"></div>
+      </section>
     </main>
 
     <div id="overlay" class="overlay">
-        <div id="modal" class="modal"></div>
+      <div id="modal" class="modal"></div>
     </div>
 
     <script>
-        const TOTAL_CHAVES = 20;
-const STORAGE_KEY = "controle_chaves_aula";
+      const TOTAL_CHAVES = 20;
+      const STORAGE_KEY = "controle_chaves_aula";
 
-function criarChavesIniciais() {
-    const lista = [];
-    for (let i = 1; i <= TOTAL_CHAVES; i++) {
-        lista.push({
+      function criarChavesIniciais() {
+        const lista = [];
+        for (let i = 1; i <= TOTAL_CHAVES; i++) {
+          lista.push({
             numero: i,
             nome: "",
             desc: "",
             status: "disponivel",
             holder: "",
-            since: null
-        });
-    }
-    return lista;
-}
+            since: null,
+          });
+        }
+        return lista;
+      }
 
-function normalizar(lista) {
-    const base = Array.isArray(lista) ? lista : [];
-    const resultado = [];
+      function normalizar(lista) {
+        const base = Array.isArray(lista) ? lista : [];
+        const resultado = [];
 
-    for (let i = 1; i <= TOTAL_CHAVES; i++) {
-        const antiga = base.find(c => c && c.numero === i) || {};
-        resultado.push({
+        for (let i = 1; i <= TOTAL_CHAVES; i++) {
+          const antiga = base.find((c) => c && c.numero === i) || {};
+          resultado.push({
             numero: i,
             nome: typeof antiga.nome === "string" ? antiga.nome : "",
             desc: typeof antiga.desc === "string" ? antiga.desc : "",
             status: antiga.status === "em_uso" ? "em_uso" : "disponivel",
             holder: typeof antiga.holder === "string" ? antiga.holder : "",
-            since: typeof antiga.since === "string" ? antiga.since : null
+            since: typeof antiga.since === "string" ? antiga.since : null,
+          });
+        }
+        return resultado;
+      }
+
+      function carregar() {
+        try {
+          const texto = localStorage.getItem(STORAGE_KEY);
+          if (texto) return JSON.parse(texto);
+        } catch (erro) {
+          console.error("Não foi possível ler os dados salvos", erro);
+        }
+        return null;
+      }
+
+      function salvar() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(chaves));
+      }
+
+      let chaves = normalizar(carregar());
+
+      const STORAGE_HIST = "controle_chaves_aula_historico";
+
+      function limparHistorico(lista) {
+        if (!Array.isArray(lista)) return [];
+        return lista
+          .filter(function (h) {
+            return (
+              h &&
+              typeof h.hora === "string" &&
+              typeof h.rotulo === "string" &&
+              typeof h.pessoa === "string" &&
+              (h.acao === "retirada" || h.acao === "devolucao")
+            );
+          })
+          .slice(0, 200);
+      }
+
+      function carregarHistorico() {
+        try {
+          const texto = localStorage.getItem(STORAGE_HIST);
+          if (texto) return limparHistorico(JSON.parse(texto));
+        } catch (erro) {
+          console.error("Não foi possível ler o histórico", erro);
+        }
+        return [];
+      }
+
+      function salvarHistorico() {
+        localStorage.setItem(STORAGE_HIST, JSON.stringify(historico));
+      }
+
+      let historico = carregarHistorico();
+
+      function registrar(k, acao, pessoa) {
+        const rotulo = k.nome
+          ? k.nome
+          : "Chave " + String(k.numero).padStart(2, "0");
+        historico.unshift({
+          rotulo: rotulo,
+          acao: acao,
+          pessoa: pessoa,
+          hora: new Date().toISOString(),
         });
-    }
-    return resultado;
-}
+        if (historico.length > 200) historico.pop();
+        salvarHistorico();
+      }
 
-function carregar() {
-    try {
-        const texto = localStorage.getItem(STORAGE_KEY);
-        if (texto) return JSON.parse(texto);
-    } catch (erro) {
-        console.error("Não foi possível ler os dados salvos", erro);
-    }
-    return null;
-}
+      function formatarHora(iso) {
+        return new Date(iso).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
 
-function salvar() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chaves));
-}
+      function escapar(texto) {
+        return String(texto).replace(/[&<>"']/g, function (c) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[c];
+        });
+      }
+      function render() {
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
 
-let chaves = normalizar(carregar());
-
-const STORAGE_HIST = "controle_chaves_aula_historico";
-
-function limparHistorico(lista) {
-    if (!Array.isArray(lista)) return [];
-    return lista.filter(function (h) {
-        return h
-            && typeof h.hora === "string"
-            && typeof h.rotulo === "string"
-            && typeof h.pessoa === "string"
-            && (h.acao === "retirada" || h.acao === "devolucao");
-    }).slice(0, 200);
-}
-
-function carregarHistorico() {
-    try {
-        const texto = localStorage.getItem(STORAGE_HIST);
-        if (texto) return limparHistorico(JSON.parse(texto));
-    } catch (erro) {
-        console.error("Não foi possível ler o histórico", erro);
-    }
-    return [];
-}
-
-function salvarHistorico() {
-    localStorage.setItem(STORAGE_HIST, JSON.stringify(historico));
-}
-
-let historico = carregarHistorico();
-
-function registrar (k, acao, pessoa) {
-    const rotulo = k.nome ? k.nome : "Chave " + String(k.numero).padStart(2, "0");
-historico.unshift({
-    rotulo: rotulo,
-    acao: acao,
-    pessoa: pessoa,
-    hora: new Date().toISOString()
-});
-if (historico.length > 200) historico.pop();
-salvarHistorico()
-}
-
-function formatarHora (iso) {
-    return new Date (iso).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
-}
-
-function escapar(texto) {
-    return String(texto).replace(/[&<>"']/g, function (c) {
-        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-}
-        function render () {
-            const grid = document.getElementById("grid")
-            grid.innerHTML = "";
-
-            for (const k of chaves) {
-                const emUso = k.status === "em_uso";
-                const card = document.createElement("div");
-               card.className = "card " + (emUso ? "busy" : "ok");
-                card.innerHTML = `
+        for (const k of chaves) {
+          const emUso = k.status === "em_uso";
+          const card = document.createElement("div");
+          card.className = "card " + (emUso ? "busy" : "ok");
+          card.innerHTML = `
                  <strong>${k.nome ? escapar(k.nome) : "Chave " + String(k.numero).padStart(2, "0")}</strong>
                  ${k.desc ? `<div class="desc">${escapar(k.desc)}</div>` : ""}
                  <p>${emUso ? "Em uso" : "Disponivel"}</p>
@@ -311,49 +326,54 @@ function escapar(texto) {
                 </button>
                 <button data-acao="editar" data-numero="${k.numero}">Editar</button>
                 `;
-                grid.appendChild(card);
-            }
-
-            renderHistorico();
+          grid.appendChild(card);
         }
-        function renderHistorico () {
-            const area= document.getElementById("historico");
-            area.innerHTML = "";
 
-            if (historico.length === 0) {
-                area.textContent = "Nenhuma movimentação registrada ainda.";
-                return;
-            }
+        renderHistorico();
+      }
+      function renderHistorico() {
+        const area = document.getElementById("historico");
+        area.innerHTML = "";
 
-            for (const h of historico.slice(0, 30)) {
-                const linha = document.createElement("div");
-                linha.className = "log-linha";
-                linha.textContent =
-            formatarHora(h.hora) + " — " + h.rotulo + " — " +
-            (h.acao === "retirada" ? "retirada por " : "devolvida por ") + h.pessoa;
-        area.appendChild(linha);
-            }
+        if (historico.length === 0) {
+          area.textContent = "Nenhuma movimentação registrada ainda.";
+          return;
         }
-            function abrirModal(html, aoMontar) {
-                const overlay = document.getElementById("overlay");
-                const modal = document.getElementById("modal");
-                modal.innerHTML = html;
-                overlay.classList.add("show");
-                aoMontar(modal);
-            }
-            function fecharModal () {
-                document.getElementById("overlay").classList.remove("show");
-            }
-        document.getElementById("grid").addEventListener("click", function (e) {
-    const botao = e.target.closest("button");
-    if (!botao) return;
 
-    const numero = Number(botao.dataset.numero);
-    const k = chaves.find(c => c.numero === numero);
-    const acao = botao.dataset.acao;
+        for (const h of historico.slice(0, 30)) {
+          const linha = document.createElement("div");
+          linha.className = "log-linha";
+          linha.textContent =
+            formatarHora(h.hora) +
+            " — " +
+            h.rotulo +
+            " — " +
+            (h.acao === "retirada" ? "retirada por " : "devolvida por ") +
+            h.pessoa;
+          area.appendChild(linha);
+        }
+      }
+      function abrirModal(html, aoMontar) {
+        const overlay = document.getElementById("overlay");
+        const modal = document.getElementById("modal");
+        modal.innerHTML = html;
+        overlay.classList.add("show");
+        aoMontar(modal);
+      }
+      function fecharModal() {
+        document.getElementById("overlay").classList.remove("show");
+      }
+      document.getElementById("grid").addEventListener("click", function (e) {
+        const botao = e.target.closest("button");
+        if (!botao) return;
 
-    if (acao === "retirar") {
-        abrirModal(`
+        const numero = Number(botao.dataset.numero);
+        const k = chaves.find((c) => c.numero === numero);
+        const acao = botao.dataset.acao;
+
+        if (acao === "retirar") {
+          abrirModal(
+            `
             <h2>Retirar chave ${String(numero).padStart(2, "0")}</h2>
             <label for="campoNome">Nome de quem está retirando</label>
             <input type="text" id="campoNome">
@@ -362,16 +382,18 @@ function escapar(texto) {
                 <button id="btnCancelar">Cancelar</button>
                 <button id="btnConfirmar" class="principal">Confirmar</button>
             </div>
-        `, function (modal) {
-            const campo = modal.querySelector("#campoNome");
-            campo.focus();
-            modal.querySelector("#btnCancelar").onclick = fecharModal;
-            modal.querySelector("#btnConfirmar").onclick = function () {
+        `,
+            function (modal) {
+              const campo = modal.querySelector("#campoNome");
+              campo.focus();
+              modal.querySelector("#btnCancelar").onclick = fecharModal;
+              modal.querySelector("#btnConfirmar").onclick = function () {
                 const nome = campo.value.trim();
                 if (!nome) {
-                    modal.querySelector("#erro").textContent = "Digite o nome de quem está retirando.";
-                    campo.focus();
-                    return;
+                  modal.querySelector("#erro").textContent =
+                    "Digite o nome de quem está retirando.";
+                  campo.focus();
+                  return;
                 }
                 k.status = "em_uso";
                 k.holder = nome;
@@ -380,21 +402,23 @@ function escapar(texto) {
                 salvar();
                 render();
                 fecharModal();
-            };
-        });
-    }
+              };
+            },
+          );
+        }
 
-    if (acao === "devolver") {
-        registrar (k, "devolucao", k.holder);
-        k.status = "disponivel";
-        k.holder = "";
-        k.since = null;
-        salvar();
-        render();
-    }
+        if (acao === "devolver") {
+          registrar(k, "devolucao", k.holder);
+          k.status = "disponivel";
+          k.holder = "";
+          k.since = null;
+          salvar();
+          render();
+        }
 
-    if (acao === "editar") {
-        abrirModal(`
+        if (acao === "editar") {
+          abrirModal(
+            `
             <h2>Editar chave ${String(numero).padStart(2, "0")}</h2>
             <label for="campoNomeChave">Nome da chave</label>
             <input type="text" id="campoNomeChave" placeholder="Ex: Portão da garagem">
@@ -404,67 +428,75 @@ function escapar(texto) {
                 <button id="btnCancelar">Cancelar</button>
                 <button id="btnSalvar" class="principal">Salvar</button>
             </div>
-        `, function (modal) {
-            const campoNome = modal.querySelector("#campoNomeChave");
-            const campoDesc = modal.querySelector("#campoDesc");
-            campoNome.value = k.nome;
-            campoDesc.value = k.desc;
-            campoNome.focus();
-            modal.querySelector("#btnCancelar").onclick = fecharModal;
-            modal.querySelector("#btnSalvar").onclick = function () {
+        `,
+            function (modal) {
+              const campoNome = modal.querySelector("#campoNomeChave");
+              const campoDesc = modal.querySelector("#campoDesc");
+              campoNome.value = k.nome;
+              campoDesc.value = k.desc;
+              campoNome.focus();
+              modal.querySelector("#btnCancelar").onclick = fecharModal;
+              modal.querySelector("#btnSalvar").onclick = function () {
                 k.nome = campoNome.value.trim();
                 k.desc = campoDesc.value.trim();
                 salvar();
                 render();
                 fecharModal();
-            };
+              };
+            },
+          );
+        }
+      });
+
+      document.getElementById("btnExportar").onclick = function () {
+        const dados = { chaves: chaves, historico: historico };
+        const blob = new Blob([JSON.stringify(dados, null, 2)], {
+          type: "application/json",
         });
-    }
-});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          "controle-chaves-backup-" +
+          new Date().toISOString().slice(0, 10) +
+          ".json";
+        a.click();
+        URL.revokeObjectURL(url);
+      };
 
-document.getElementById("btnExportar").onclick = function () {
-    const dados = { chaves: chaves, historico: historico };
-    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "controle-chaves-backup-" + new Date().toISOString().slice(0, 10) + ".json";
-    a.click();
-    URL.revokeObjectURL(url);
-};
+      document.getElementById("btnImportar").onclick = function () {
+        document.getElementById("arquivoImport").click();
+      };
 
-document.getElementById("btnImportar").onclick = function () {
-    document.getElementById("arquivoImport").click();
-};
+      document.getElementById("arquivoImport").onchange = function (e) {
+        const arquivo = e.target.files[0];
+        if (!arquivo) return;
 
-document.getElementById("arquivoImport").onchange = function (e) {
-    const arquivo = e.target.files[0];
-    if (!arquivo) return;
-
-    const leitor = new FileReader();
-    leitor.onload = function () {
-        try {
+        const leitor = new FileReader();
+        leitor.onload = function () {
+          try {
             const dados = JSON.parse(leitor.result);
             if (!dados || !Array.isArray(dados.chaves)) {
-                alert("Arquivo inválido.");
-                return;
+              alert("Arquivo inválido.");
+              return;
             }
-            if (!confirm("Isso vai substituir os dados atuais. Continuar?")) return;
+            if (!confirm("Isso vai substituir os dados atuais. Continuar?"))
+              return;
 
             chaves = normalizar(dados.chaves);
-historico = limparHistorico(dados.historico);
+            historico = limparHistorico(dados.historico);
             salvar();
             salvarHistorico();
             render();
-        } catch (erro) {
+          } catch (erro) {
             alert("Não foi possível ler o arquivo.");
-        }
-    };
-    leitor.readAsText(arquivo);
-    e.target.value = "";
-};
+          }
+        };
+        leitor.readAsText(arquivo);
+        e.target.value = "";
+      };
 
-        render();
+      render();
     </script>
-</body>
+  </body>
 </html>
